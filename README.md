@@ -11,6 +11,130 @@
 ### Reflection
 - Is a tool to detect components in the assembly or dll
 - It can use to “unit test” or do “reverse engineering”
+- Powerful but have efficiency problem
+```c#
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FileModel
+{
+    class HelperReflection
+    {
+        static public void LineParser(Type type, object entity, string line, int lineLen, out bool success)
+        {
+            if (line.Length != lineLen)
+            {
+                success = false;
+                return;
+            }
+            else success = true;
+
+            ParseAndSetEntity(type, entity, type.GetProperties().Select(x => x.Name), line);
+        }
+        static public void ParseAndSetEntity(Type type, object entity, IEnumerable<string> columns, string line)
+        {
+            int startPos = 0;
+            int spanLen = 0;
+            string parser;
+            foreach (string column in columns)
+            {
+                spanLen = GetCloumnStrLen(type, column);
+                parser = line.Substring(startPos, spanLen);
+                parser = string.IsNullOrWhiteSpace(parser) ? string.Empty : parser;
+                SetCloumnValue(type, entity, column, parser);
+                startPos += spanLen;
+            }
+        }
+        static public int GetCloumnStrLen(Type type, string columnName)
+        {
+            StringLengthAttribute len = type.GetProperty(columnName).GetCustomAttributes(typeof(StringLengthAttribute), false).Cast<StringLengthAttribute>().SingleOrDefault();
+            if (len != null) return len.MaximumLength;
+            else return -1;
+        }
+        static public void SetCloumnValue(Type type, object entity, string columnName, string value)
+        {
+            type.GetProperty(columnName).SetValue(entity, value);
+        }
+    }
+
+    // 需要再確定
+    // DT_DECIMAL 跟 Decimal
+    // DT_STR (非Unicode) 跟 
+    // DT_WSTR (Unicode) 跟 
+
+    class tap_mhok_log
+    {
+        //tseno 	//DT_STR 7 
+        //bs        //DT_STR 1
+        //term		//DT_STR 1
+        //dseq		//DT_STR 4
+        //ttime		//DT_STR 8
+        //bhno		//DT_STR 1
+        //cumb_key	//DT_DECIMAL 7
+        //otype		//DT_DECIMAL 1
+        //stock		//DT_STR 6
+        //mqty		//DT_DECIMAL 8
+        //ecode		//DT_DECIMAL 1
+        //price		//DT_WSTR 9 
+        //tsale		//DT_STR 3
+        //tdate		//DT_STR 8
+        //amt		//DT_WSTR 12
+        //TradeType	//DT_STR 1
+
+        [StringLength(7)] public string tseno { get; set; }
+
+        [StringLength(1)] public string bs { get; set; }
+
+        [StringLength(1)] public string term { get; set; }
+
+        [StringLength(4)] public string dseq { get; set; }
+
+        [StringLength(8)] public string ttime { get; set; }
+
+        [StringLength(1)] public string bhno { get; set; }
+
+        [StringLength(7)] public string cumb_key { get; set; }
+
+        [StringLength(1)] public string otype { get; set; }
+
+        [StringLength(6)] public string stock { get; set; }
+
+        [StringLength(8)] public string mqty { get; set; }
+
+        [StringLength(1)] public string ecode { get; set; }
+
+        [StringLength(9)] public string price { get; set; }
+
+        [StringLength(3)] public string tsale { get; set; }
+
+        [StringLength(8)] public string tdate { get; set; }
+
+        [StringLength(12)] public string amt { get; set; }
+        
+        [StringLength(1)] public string TradeType { get; set; }
+
+        public tap_mhok_log(string line, out bool success)
+        {
+            HelperReflection.LineParser(GetType(), this, line, 78, out success);
+        }
+
+        static tap_mhok_log()
+        {
+            int len = 0;
+            foreach (var item in typeof(tap_mhok_log).GetProperties())
+            {
+                len += HelperReflection.GetCloumnStrLen(typeof(tap_mhok_log), item.Name);
+            }
+        }
+    }
+}
+```
+
 
 ### anonymous
 - A type that deosn’t defined its class name
@@ -48,6 +172,24 @@ var students = new List<Student>
     new Student { Name = "Bob", GPA = 3.2 },
     new Student { Name = "Charlie", GPA = 3.8 }
 };
+```
+
+### Passing Property
+
+```csharp
+static public bool LineParser(string line, Action<string> setProperty, Func<string> getProperty, bool checkNull, ref int startPos, int parseLen)
+        {
+            if (startPos < 0 || (startPos + parseLen) > (line.Length - 1)) return false;
+
+            setProperty(line.Substring(startPos, parseLen));
+            startPos += parseLen;
+
+            if (checkNull && string.IsNullOrWhiteSpace(getProperty())) return false;
+            else return true;
+        }
+
+sucs = HelperParser.LineParser(line, (value) => { tseno     = value; }, () => { return tseno;     },  true, ref startPos, 7);
+
 ```
 
 ### List and String
