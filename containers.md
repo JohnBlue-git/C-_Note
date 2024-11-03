@@ -29,6 +29,18 @@ IEnumerable<T>
 IEnumerable<T>  = .Concat(IEnumerable<T> …)
 IEnumerable<T>  = .Append(T …)
 ```
+```c#
+IEnumerable<FutureTickerData> _tickerData;
+_tickerData = new List<FutureTickerData>();
+
+通常使用工具傳輸都是最底層類別
+_tickerData = conn.Query<FutureData>(_getFutureDataSql);
+
+用轉換類別的方式使用
+如果就是List就只有轉換類別 如果不是就會產生新的List物件
+_tickerData.AsList().AddRange(IEnumerable<FutureTickerData> ...);
+_tickerData.AsList().Add(FutureTickerData ...);
+```
 
 ### List
 ```c#
