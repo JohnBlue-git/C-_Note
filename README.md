@@ -153,6 +153,28 @@ async Task<T> hello() { ...; return T; }
 async Task<T> hello() { await Task.Run(…); }
 ```
 
+### Handle Task Exception
+```csharp
+try {
+	// wait for all tasks in the list
+	Task.Run(async () => await Task.WhenAll(taskList)).Wait();
+}
+catch (AggregateException ae)
+{
+    string message = "";
+    foreach (var tsk in taskList) // ae.InnerExceptions
+    {
+        message += $"job class: {this.GetType().Name}; {tsk.Exception}\n\n";
+    }
+    throw new Exception($"{message}");
+}
+catch (Exception ex)
+{
+    throw new Exception($"job class: {this.GetType().Name}; {ex.ToString()}\n");
+}
+```
+
+
 ### Implementing a Singleton Pattern
 
 Task:
