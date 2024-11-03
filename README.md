@@ -214,3 +214,21 @@ for (int i = 0; i < 20; i++)
 }
 System.Console.WriteLine(sb.ToString());
 
+### File and Authencation
+```csharp
+https://learn.microsoft.com/zh-tw/dotnet/api/system.io.filestream.-ctor?view=net-8.0#system-io-filestream-ctor(system-string-system-io-filemode-system-io-fileaccess-system-io-fileshare-system-int32)
+
+FileShare
+Contains constants for controlling the kind of access other operations can have to the same file.
+
+using (var sr = new StreamReader(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)))
+{
+    // etc...
+}
+```
+
+### Alias
+```csharp
+using SysTask = System.Threading.Tasks;
+```
+
