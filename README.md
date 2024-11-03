@@ -184,3 +184,11 @@ public sealed class Singleton
 }
 ```
 
+### Use StringBuilder for concatenation in tight loops.
+var sb = new System.Text.StringBuilder();
+for (int i = 0; i < 20; i++)
+{
+    sb.AppendLine(i.ToString());
+}
+System.Console.WriteLine(sb.ToString());
+
