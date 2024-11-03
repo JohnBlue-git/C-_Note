@@ -1,8 +1,6 @@
 
 ### c# data type
-![C# DATA TYPE.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/5ed22bfe-27f0-43eb-bb6a-caf269361b3b/5ed64387-8d35-40e5-9e1b-bf4f3c5c477d/C_DATA_TYPE.png)
-
-
+![C# DATA TYPE](https://github.com/user-attachments/assets/66550534-fc87-4f67-abe3-e6ae087e6ea1)
 
 ### Modfier
 - Public
